@@ -209,7 +209,7 @@ const isReversed = (startIndex, endIndex) => startIndex > endIndex;
 const getStationIndex = (line, station) =>
   lines[line].stations.indexOf(station);
 
-const displayTrip = (totalStops, lineStart, initialStops, lastStops = []) => {
+const displayTrip = (totalStops, lineStart, initialStops, lastStops) => {
   const legsOfTripText = [
     `You must travel through the following stops on the ${lineStart} line: ${initialStops.join(
       ", "
