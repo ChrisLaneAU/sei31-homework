@@ -232,9 +232,11 @@ const stops = (line, startIndex, endIndex) => {
   const orderedStops = isReversed(startIndex, endIndex)
     ? lines[line].stationsReversed()
     : lines[line].stations; // should this be done here or in its own function?
-  return orderedStops.filter(
-    (station, index) => station && index > startIndex && index <= endIndex
-  );
+  return orderedStops.filter((station, index) => {
+    if (isReversed(startIndex, endIndex))
+      return station && index > endIndex && index <= startIndex;
+    return station && index > startIndex && index <= endIndex;
+  });
 };
 
 // MAIN FUNCTION
@@ -245,14 +247,21 @@ const planTrip = (lineStart, stationStart, lineEnd, stationEnd) => {
   const endIndex = getStationIndex(lineEnd, stationEnd);
 
   // get indexOf "Union Square" for each journey
-  const firstUSIndex = getStationIndex(lineStart, "Union Square");
-  const secondUSIndex = getStationIndex(lineEnd, "Union Square");
+  let firstUSIndex,
+    secondUSIndex,
+    lastStops = [];
+  if (lineEnd !== lineStart) {
+    firstUSIndex = getStationIndex(lineStart, "Union Square");
+    secondUSIndex = getStationIndex(lineEnd, "Union Square");
+  }
 
   // declare one array for initialStops
-  const initialStops = stops(lineStart, startIndex, firstUSIndex);
+  const initialStops = stops(lineStart, startIndex, firstUSIndex || endIndex);
 
   // declare a second array for lastStops
-  const lastStops = stops(lineEnd, endIndex, secondUSIndex);
+  if (lineEnd !== lineStart) {
+    lastStops = stops(lineEnd, secondUSIndex, endIndex);
+  }
 
   // sum total stops
   const totalStops = initialStops.length + (lastStops.length || 0);
@@ -267,3 +276,4 @@ const planTrip = (lineStart, stationStart, lineEnd, stationEnd) => {
 
 planTrip("N", "Times Square", "N", "8th");
 planTrip("N", "Times Square", "6", "33rd");
+planTrip("L", "8th", "6", "Grand Central");
