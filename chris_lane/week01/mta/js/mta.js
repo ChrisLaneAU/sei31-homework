@@ -247,24 +247,18 @@ const planTrip = (lineStart, stationStart, lineEnd, stationEnd) => {
   const endIndex = getStationIndex(lineEnd, stationEnd);
 
   // get indexOf "Union Square" for each journey
-  let firstUSIndex,
-    secondUSIndex,
-    lastStops = [];
-  if (lineEnd !== lineStart) {
-    firstUSIndex = getStationIndex(lineStart, "Union Square");
-    secondUSIndex = getStationIndex(lineEnd, "Union Square");
-  }
+  const firstUSIndex = getStationIndex(lineStart, "Union Square");
+  const secondUSIndex = getStationIndex(lineEnd, "Union Square");
 
-  // declare one array for initialStops
+  // declare an array for lastStops
+  const lastStops =
+    lineEnd !== lineStart ? stops(lineEnd, secondUSIndex, endIndex) : [];
+
+  // declare a second array for initialStops
   const initialStops = stops(lineStart, startIndex, firstUSIndex || endIndex);
 
-  // declare a second array for lastStops
-  if (lineEnd !== lineStart) {
-    lastStops = stops(lineEnd, secondUSIndex, endIndex);
-  }
-
   // sum total stops
-  const totalStops = initialStops.length + (lastStops.length || 0);
+  const totalStops = initialStops.length + lastStops.length;
 
   // build trip data array
   const trip = [totalStops, lineStart, initialStops, lastStops];
